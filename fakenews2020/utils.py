@@ -4,7 +4,30 @@ import json
 import regex
 from nltk.tokenize import sent_tokenize
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+import tensorflow as tf    
+import numpy as np
 
+
+class ExperimentBase:
+    def set_data(self, data, data_prop):
+        self.data = data
+        self.data_prop = data_prop
+    
+    def run(self, texts_i, exps_i):
+        pass
+    
+class NNBase:
+    def getX(self):
+        pass
+    
+    def gety(self):
+        pass
+    
+    def build_model(self):
+        pass
+    
+scoring_functions = [accuracy_score, precision_score, recall_score, f1_score]
 
 def combine_sparse_matrices(X, Z):
     """Combines two sparse matrices
@@ -32,11 +55,13 @@ base_word_tokenizer = CountVectorizer().build_tokenizer() # r"(?u)\b\w\w+\b"
 RE_SPLIT = r'\w+|[^\w\s]+'
 reSplit = regex.compile(RE_SPLIT, regex.U)
 
-def word_tokenizer(text):
+def word_tokenizer(text, lowercase=True):
     """Word tokenizer
     """
-    tokens = [x for x in regex.findall(reSplit, text)]
-#     tokens = [str.lower(x) for x in regex.findall(reSplit, text)]
+    if lowercase:
+        tokens = [str.lower(x) for x in regex.findall(reSplit, text)]
+    else:
+        tokens = [x for x in regex.findall(reSplit, text)]
     return tokens
 
 def sentence_tokenizer(text):
@@ -50,6 +75,19 @@ def char_tokenizer(text):
     txt = regex.sub(r'\s+', ' ', text)
     return [t for t in txt]
 
+def binary_crossentropy(y, yh, n):
+    """(Because loss is averaged over all training data, regardless of sample_weight.)
+    """
+    return np.sum([-np.log(yh[i]) if y[i] == 1 else -np.log(1-yh[i]) for i in range(len(y))]) / n
+
+def sparse_dropout(x, keep_prob, noise_shape):
+    """Dropout for sparse tensors.
+    """
+    random_tensor = keep_prob
+    random_tensor += tf.random.uniform(noise_shape)
+    dropout_mask = tf.cast(tf.floor(random_tensor), dtype=tf.bool)
+    pre_out = tf.sparse.retain(x, dropout_mask)
+    return pre_out * (1./keep_prob)
 
 
 
