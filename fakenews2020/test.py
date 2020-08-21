@@ -109,7 +109,8 @@ def main(args):
 if __name__ == "__main__":
 #     main(sys.argv[1:])
 #     main('-d 0 -m 1'.split())
-    main('-d 3 -m 8'.split())
+#     main('-d 3 -m 8'.split())
+    main('-d 3 -m 12'.split())
 #     main('-d 0 -m 13'.split())
 #     main('-h'.split())
     

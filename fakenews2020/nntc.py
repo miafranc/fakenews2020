@@ -12,6 +12,7 @@ from utils import scoring_functions
 from nn.cnn_char import CNNChar
 from nn.cnn_word import CNNWord
 from nn.lstm import LSTM
+from nn.blstm import BLSTM
 
 
 class NNTC(ExperimentBase):
@@ -36,6 +37,8 @@ class NNTC(ExperimentBase):
             self.nnet = CNNWord(self.data, self.data_prop['length_words'], texts_i)
         elif exps_i == 11: # LSTM
             self.nnet = LSTM(self.data, self.data_prop['length_words'], texts_i)
+        elif exps_i == 12: # BLSTM
+            self.nnet = BLSTM(self.data, self.data_prop['length_words'], texts_i)
             
     def run(self, texts_i, exps_i):
         self.build_model(texts_i, exps_i)
