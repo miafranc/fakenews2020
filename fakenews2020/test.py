@@ -82,16 +82,18 @@ datasets = [
 ]
 
 def main(args):
-#     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # if no GPU is wanted
-    
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--dataset', '-d', type=int, required=True, help="Dataset name.\nAvailable datasets:\n" + "".join([f"\t{i} - {datasets[i]['abbrv']} ({datasets[i]['name']})\n" for i in range(len(datasets))]))
     parser.add_argument('--method', '-m', type=int, required=True, help="Method.\nAvailable methods:\n" + "".join([f"\t{i} - {methods[i]}\n" for i in range(len(methods))]))
     parser.add_argument('--text', '-t', type=int, default=2, help="Text data to use (default=2).\n" + "".join([f"\t{i} - {texts[i]}\n" for i in range(len(texts))]))
+    parser.add_argument('--gpu', '-g', type=int, default=1, help="Use GPU if available (default=1 [true]).")
     
     args = parser.parse_args(args)
 
 #     print(args)
+
+    if args.gpu == 0:
+        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
     data = load_data(datasets[args.dataset]['path'])
     data_prop = datasets[args.dataset]
@@ -120,5 +122,3 @@ if __name__ == "__main__":
 #     for m in [9]:
 #         for d in range(len(datasets)):
 #             main(f'-m {m} -d {d}'.split())
-    
-    
