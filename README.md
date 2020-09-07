@@ -6,7 +6,7 @@ Text categorization experiments for automatic fake news detection.
 
 This repository contains the Python code for the experiments described in the paper:
 
-> Z. Bodó. Fake news detection using no external knowledge. Submitted to MDIS 2020.
+> Z. Bodó. Fake news detection without external knowledge. Submitted to MDIS 2020.
 
 ## Command-line interface
 
