@@ -30,7 +30,7 @@ class NNBase:
 scoring_functions = [accuracy_score, precision_score, recall_score, f1_score]
 
 def combine_sparse_matrices(X, Z):
-    """Combines two sparse matrices
+    """Combines two sparse matrices (horizontally)
     """
     maxCol = max(X.indices)
     maxCol2 = max(Z.indices)

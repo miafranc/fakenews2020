@@ -1,5 +1,6 @@
 import sys
 import argparse
+import os
 
 from utils import load_data
 from goftc import GOFTC
@@ -13,19 +14,19 @@ texts = [
 ]
 
 methods = [
-    'baseline_binary', #0
-    'baseline_freq', #1
-    'baseline_tfidf', #2
-    'uni+bi_binary', #3
-    'new_tokenizer', #4
-    'chi2_5000', #5
-    'stat_features', #6
+    'baseline binary', #0
+    'baseline freq', #1
+    'baseline tf-idf', #2
+    'uni+bigrams binary', #3
+    'new tokenizer', #4
+    'chi2 5000', #5
+    'stat. features', #6
     'tweak1', #7
     'tweak2', #8
-    'cnn_char', #9
-    'cnn_word', #10
+    'c-cnn', #9
+    'w-cnn', #10
     'lstm', #11,
-    'blstm', #12
+    'a-blstm', #12
     'gcn' #13
 ]
 
@@ -81,6 +82,8 @@ datasets = [
 ]
 
 def main(args):
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # if no GPU is wanted
+    
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--dataset', '-d', type=int, required=True, help="Dataset name.\nAvailable datasets:\n" + "".join([f"\t{i} - {datasets[i]['abbrv']} ({datasets[i]['name']})\n" for i in range(len(datasets))]))
     parser.add_argument('--method', '-m', type=int, required=True, help="Method.\nAvailable methods:\n" + "".join([f"\t{i} - {methods[i]}\n" for i in range(len(methods))]))
@@ -107,10 +110,15 @@ def main(args):
     
 
 if __name__ == "__main__":
-#     main(sys.argv[1:])
+    main(sys.argv[1:])
+
 #     main('-d 0 -m 1'.split())
 #     main('-d 3 -m 8'.split())
-    main('-d 3 -m 12'.split())
-#     main('-d 0 -m 13'.split())
+
 #     main('-h'.split())
+
+#     for m in [9]:
+#         for d in range(len(datasets)):
+#             main(f'-m {m} -d {d}'.split())
+    
     

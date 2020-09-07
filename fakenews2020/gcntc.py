@@ -16,6 +16,8 @@ from keras import backend as K
 
 import os.path
 
+from cyclical_learning_rate import CyclicLR
+
 from utils import word_tokenizer
 from utils import ExperimentBase
 from utils import scoring_functions
@@ -201,12 +203,13 @@ class GCL(tf.keras.layers.Layer):
 class GCNTC(ExperimentBase):
     
     def __init__(self):
-        self.lr = 0.01
-#         self.num_epochs = 1000
-#         self.num_epochs = 1
-        self.num_epochs = 10
-        self.patience = 50
-        self.batch_size = 50
+        self.lr = 0.02
+        self.num_epochs = 200
+        self.patience = 10
+
+        self.min_lr = 1e-5
+        self.max_lr = 1e-3
+        self.step_lr = 8.
         
         self.cv_k = 5
         self.cv_shuffle = False
@@ -259,7 +262,7 @@ class GCNTC(ExperimentBase):
             
             opt = tf.keras.optimizers.Adam(learning_rate=self.lr)
             self.model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-            
+
             best_val_loss = 10**10  # best loss so far
             best_preds = []  # best predictions (for evaluation)
             wait = 0
@@ -301,6 +304,7 @@ class GCNTC(ExperimentBase):
             K.clear_session()  # if retrain!
             score = [f(y_ok[test_index], best_pred_labels[test_index]) for f in scoring_functions]
             scores.append(score)
+            print("-> SCORES: {}".format(scores))
                
 #             break # only one iteration
        
@@ -312,8 +316,4 @@ class GCNTC(ExperimentBase):
 
 
 if __name__ == "__main__":
-    from test import datasets
-    from utils import load_data
-    data = load_data(datasets[0]['path'])
-    build_graph(data, datasets[0])
-    
+    pass

@@ -6,6 +6,8 @@ from keras import backend as K
 
 from sklearn.model_selection import train_test_split
 
+from cyclical_learning_rate import CyclicLR
+
 from utils import ExperimentBase
 from utils import scoring_functions
 
@@ -18,11 +20,14 @@ from nn.blstm import BLSTM
 class NNTC(ExperimentBase):
     
     def __init__(self):
-        self.lr = 0.01
-#         self.num_epochs = 1000
-        self.num_epochs = 1
+        self.lr = 0.001
+        self.num_epochs = 1000
         self.patience = 50
         self.batch_size = 50
+        
+        self.min_lr = 1e-5
+        self.max_lr = 1e-3
+        self.step_lr = 8.
         
         self.cv_k = 5
         self.cv_shuffle = False
@@ -58,13 +63,16 @@ class NNTC(ExperimentBase):
             self.model = self.nnet.build_model()
             print(self.model.summary())
              
-            opt = tf.keras.optimizers.Adam(learning_rate=self.lr)
-            self.model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+            self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+            clr = CyclicLR(base_lr=self.min_lr, max_lr=self.max_lr, mode='triangular', 
+                           step_size=self.step_lr * X_tr.shape[0] / self.batch_size)
              
             self.model.fit(X_tr, y_tr, epochs=self.num_epochs,
                            batch_size=self.batch_size,
                            validation_data=(X_val, y_val),
-                           callbacks=[callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=self.patience, verbose=True, restore_best_weights=True)]
+                           callbacks=[clr,
+                                      callbacks.EarlyStopping(monitor='val_loss', min_delta=0, patience=self.patience, verbose=True, restore_best_weights=True)]
                            )
              
             y_pred = (self.model.predict(X_test) > 0.5).astype("int32")
@@ -73,7 +81,8 @@ class NNTC(ExperimentBase):
              
             score = [f(y_test, y_pred) for f in scoring_functions]
             scores.append(score)
-             
+            print("-> SCORES: {}".format(scores))
+            
 #             break # only one iteration
     
         means = np.mean(scores, axis=0)

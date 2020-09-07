@@ -47,14 +47,17 @@ class LSTM(NNBase):
         return y
         
     def build_model(self):
-        input_layer = layers.Input(shape=(self.text_length,))
-        emb_layer = layers.Embedding(input_dim=len(self.word_map)+1, output_dim=self.embedding_dim, input_length=self.text_length)(input_layer)
-        layer = layers.LSTM(100)(emb_layer)
-        layer = layers.Dense(256, activation='relu')(layer)
-        layer = layers.Dropout(0.5)(layer)
-        layer = layers.Dense(1, activation='sigmoid')(layer)
+        input_layer = layers.Input(shape=(self.text_length,), name='Input')
+        emb_layer = layers.Embedding(input_dim=len(self.word_map)+1, output_dim=self.embedding_dim, input_length=self.text_length, name='Embedding')(input_layer)
+        layer = layers.LSTM(100, name='LSTM')(emb_layer)
+        layer = layers.Dense(256, activation='relu', name='Dense')(layer)
+        layer = layers.Dropout(0.5, name='Dropout')(layer)
+        layer = layers.Dense(1, activation='sigmoid', name='Output')(layer)
         
         model = tf.keras.Model(inputs=[input_layer], outputs=[layer])
     
         return model
+   
     
+if __name__ == "__main__":
+    pass
